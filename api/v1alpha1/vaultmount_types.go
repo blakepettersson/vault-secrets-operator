@@ -50,6 +50,11 @@ type VaultMountSpec struct {
 	// +kubebuilder:validation:Optional
 	// +mapType=granular
 	Options map[string]string `json:"options,omitempty"`
+
+	// Type Specifies the type of the backend, such as "aws". Only "kv" is supported right now.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:Enum={kv}
+	Type string `json:"type"`
 }
 
 type MountConfig struct {
@@ -97,21 +102,6 @@ type MountConfig struct {
 	AllowedResponseHeaders []string `json:"allowedResponseHeaders,omitempty"`
 }
 
-type VaultKVMountSpec struct {
-	VaultMountSpec `json:",inline"`
-
-	// Type Specifies the type of the backend, such as "aws".
-	// +kubebuilder:validation:Required
-	// +kubebuilder:validation:Enum={1,2}
-	Version string `json:"version"`
-
-	// Type Specifies the type of the backend, such as "aws".
-	// +kubebuilder:validation:Required
-	// +kubebuilder:validation:Enum={kv}
-	// +kubebuilder:default="kv"
-	Type string `json:"type"`
-}
-
 // VaultMountStatus defines the observed state of VaultMountSpec
 type VaultMountStatus struct {
 	// Valid auth mechanism.
@@ -123,24 +113,24 @@ type VaultMountStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
-// VaultMount is the Schema for the vaultkvmounts API
-type VaultKVMount struct {
+// VaultMount is the Schema for the vaultmounts API
+type VaultMount struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   VaultKVMountSpec `json:"spec,omitempty"`
+	Spec   VaultMountSpec   `json:"spec,omitempty"`
 	Status VaultMountStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 
-// VaultMountList contains a list of VaultKVMount
-type VaultKVMountList struct {
+// VaultMountList contains a list of VaultMount
+type VaultMountList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []VaultKVMount `json:"items"`
+	Items           []VaultMount `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&VaultKVMount{}, &VaultKVMountList{})
+	SchemeBuilder.Register(&VaultMount{}, &VaultMountList{})
 }

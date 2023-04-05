@@ -136,6 +136,9 @@ type Client interface {
 	Restore(context.Context, *api.Secret) error
 	Write(context.Context, string, map[string]any) (*api.Secret, error)
 	Delete(context.Context, string) (*api.Secret, error)
+	Mount(ctx context.Context, path string, input *api.MountInput) error
+	ListMounts(ctx context.Context) (map[string]*api.MountOutput, error)
+	TuneMount(ctx context.Context, path string, input api.MountConfigInput) error
 	GetTokenSecret() *api.Secret
 	CheckExpiry(int64) (bool, error)
 	GetVaultAuthObj() *secretsv1alpha1.VaultAuth
@@ -410,6 +413,39 @@ func (c *defaultClient) Read(ctx context.Context, path string) (*api.Secret, err
 	return secret, err
 }
 
+func (c *defaultClient) ListMounts(ctx context.Context) (map[string]*api.MountOutput, error) {
+	var err error
+	startTS := time.Now()
+	defer func() {
+		c.observeTime(startTS, metrics.OperationList)
+		c.incrementOperationCounter(metrics.OperationList, err)
+	}()
+
+	return c.client.Sys().ListMountsWithContext(ctx)
+}
+
+func (c *defaultClient) TuneMount(ctx context.Context, path string, input api.MountConfigInput) error {
+	var err error
+	startTS := time.Now()
+	defer func() {
+		c.observeTime(startTS, metrics.OperationWrite)
+		c.incrementOperationCounter(metrics.OperationWrite, err)
+	}()
+
+	return c.client.Sys().TuneMountWithContext(ctx, path, input)
+}
+
+func (c *defaultClient) Mount(ctx context.Context, path string, input *api.MountInput) error {
+	var err error
+	startTS := time.Now()
+	defer func() {
+		c.observeTime(startTS, metrics.OperationWrite)
+		c.incrementOperationCounter(metrics.OperationWrite, err)
+	}()
+
+	return c.client.Sys().MountWithContext(ctx, path, input)
+}
+
 func (c *defaultClient) Write(ctx context.Context, path string, m map[string]any) (*api.Secret, error) {
 	var err error
 	startTS := time.Now()
@@ -427,8 +463,8 @@ func (c *defaultClient) Delete(ctx context.Context, path string) (*api.Secret, e
 	var err error
 	startTS := time.Now()
 	defer func() {
-		c.observeTime(startTS, metrics.OperationWrite)
-		c.incrementOperationCounter(metrics.OperationWrite, err)
+		c.observeTime(startTS, metrics.OperationDelete)
+		c.incrementOperationCounter(metrics.OperationDelete, err)
 	}()
 
 	var secret *api.Secret

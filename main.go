@@ -255,13 +255,13 @@ func main() {
 		setupLog.Error(err, "Unable to create controller", "controller", "VaultKubernetesAuthBackendRole")
 		os.Exit(1)
 	}
-	if err = (&controllers.VaultKVMountReconciler{
+	if err = (&controllers.VaultMountReconciler{
 		Client:        mgr.GetClient(),
 		Scheme:        mgr.GetScheme(),
-		Recorder:      mgr.GetEventRecorderFor("VaultKVMount"),
+		Recorder:      mgr.GetEventRecorderFor("VaultMount"),
 		ClientFactory: clientFactory,
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "Unable to create controller", "controller", "VaultKVMount")
+		setupLog.Error(err, "Unable to create controller", "controller", "VaultMount")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder

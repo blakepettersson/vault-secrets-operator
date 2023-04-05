@@ -20,6 +20,7 @@ const (
 	LabelVaultConnection = "vault_connection"
 
 	OperationGet        = "get"
+	OperationList       = "list"
 	OperationStore      = "store"
 	OperationRestore    = "restore"
 	OperationRestoreAll = "restore_all"
@@ -29,6 +30,7 @@ const (
 	OperationRenew      = "renew"
 	OperationRead       = "read"
 	OperationWrite      = "write"
+	OperationDelete     = "delete"
 
 	NameConfig                = "config"
 	NameLength                = "length"

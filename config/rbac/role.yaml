@@ -231,7 +231,7 @@ rules:
 - apiGroups:
   - secrets.hashicorp.com
   resources:
-  - vaultkvmounts
+  - vaultmounts
   verbs:
   - create
   - delete
@@ -243,13 +243,13 @@ rules:
 - apiGroups:
   - secrets.hashicorp.com
   resources:
-  - vaultkvmounts/finalizers
+  - vaultmounts/finalizers
   verbs:
   - update
 - apiGroups:
   - secrets.hashicorp.com
   resources:
-  - vaultkvmounts/status
+  - vaultmounts/status
   verbs:
   - get
   - patch
