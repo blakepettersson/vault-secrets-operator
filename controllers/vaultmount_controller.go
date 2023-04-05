@@ -91,9 +91,9 @@ func (r *VaultMountReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		// UserLockoutConfig:         nil,
 	}
 
-	log.FromContext(ctx, "mounts", mounts)
+	path := fmt.Sprintf("%s/", o.Spec.Path)
 
-	if _, ok := mounts[o.Spec.Path]; ok {
+	if _, ok := mounts[path]; ok {
 		err = c.TuneMount(ctx, o.Spec.Path, config)
 
 		if err != nil {
