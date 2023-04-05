@@ -231,6 +231,32 @@ rules:
 - apiGroups:
   - secrets.hashicorp.com
   resources:
+  - vaultkvmounts
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - secrets.hashicorp.com
+  resources:
+  - vaultkvmounts/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - secrets.hashicorp.com
+  resources:
+  - vaultkvmounts/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - secrets.hashicorp.com
+  resources:
   - vaultpkisecrets
   verbs:
   - create
