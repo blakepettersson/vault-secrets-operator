@@ -98,14 +98,14 @@ func (r *VaultPolicyReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		return ctrl.Result{}, err
 	}
 
-	if _, err := c.Write(ctx, fmt.Sprintf("/sys/policies/%s", o.Name), map[string]any{
+	if _, err := c.Write(ctx, fmt.Sprintf("/sys/policies/acl/%s", o.Name), map[string]any{
 		"policy": string(policy),
 	}); err != nil {
 		return ctrl.Result{}, err
 	}
 
 	if o.Status.Name != "" && o.Status.Name != o.Name {
-		if _, err := c.Delete(ctx, fmt.Sprintf("/sys/policies/%s", o.Status.Name)); err != nil {
+		if _, err := c.Delete(ctx, fmt.Sprintf("/sys/policies/acl/%s", o.Status.Name)); err != nil {
 			return ctrl.Result{}, err
 		}
 	}
@@ -140,7 +140,7 @@ func (r *VaultPolicyReconciler) addFinalizer(ctx context.Context, o *secretsv1al
 
 func (r *VaultPolicyReconciler) handleFinalizer(ctx context.Context, c vault.Client, o *secretsv1alpha1.VaultPolicy) (ctrl.Result, error) {
 	if controllerutil.ContainsFinalizer(o, vaultPolicyFinalizer) {
-		if _, err := c.Delete(ctx, fmt.Sprintf("/sys/policies/%s", o.Name)); err != nil {
+		if _, err := c.Delete(ctx, fmt.Sprintf("/sys/policies/acl/%s", o.Name)); err != nil {
 			return ctrl.Result{}, err
 		}
 
