@@ -94,13 +94,11 @@ func (r *VaultMountReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	path := fmt.Sprintf("%s/", o.Spec.Path)
 
 	if _, ok := mounts[path]; ok {
-		err = c.TuneMount(ctx, o.Spec.Path, config)
-
-		if err != nil {
+		if err := c.TuneMount(ctx, o.Spec.Path, config); err != nil {
 			return ctrl.Result{}, err
 		}
 	} else {
-		err = c.Mount(ctx, o.Spec.Path, &api.MountInput{
+		if err = c.Mount(ctx, o.Spec.Path, &api.MountInput{
 			Type:                  o.Spec.Type,
 			Description:           o.Spec.Description,
 			Config:                config,
@@ -108,15 +106,13 @@ func (r *VaultMountReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 			SealWrap:              o.Spec.SealWrap,
 			ExternalEntropyAccess: o.Spec.ExternalEntropyAccess,
 			Options:               o.Spec.Options,
-		})
-
-		if err != nil {
+		}); err != nil {
 			return ctrl.Result{}, err
 		}
 	}
 
 	if o.Status.Path != "" && o.Status.Path != o.Spec.Path {
-		if _, err := c.Delete(ctx, fmt.Sprintf("/sys/mounts/%s", o.Status.Path)); err != nil {
+		if err := c.Remount(ctx, o.Status.Path, o.Spec.Path); err != nil {
 			return ctrl.Result{}, err
 		}
 	}

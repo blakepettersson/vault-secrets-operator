@@ -139,6 +139,7 @@ type Client interface {
 	Mount(ctx context.Context, path string, input *api.MountInput) error
 	ListMounts(ctx context.Context) (map[string]*api.MountOutput, error)
 	TuneMount(ctx context.Context, path string, input api.MountConfigInput) error
+	Remount(ctx context.Context, sourcePath, destinationPath string) error
 	GetTokenSecret() *api.Secret
 	CheckExpiry(int64) (bool, error)
 	GetVaultAuthObj() *secretsv1alpha1.VaultAuth
@@ -444,6 +445,17 @@ func (c *defaultClient) Mount(ctx context.Context, path string, input *api.Mount
 	}()
 
 	return c.client.Sys().MountWithContext(ctx, path, input)
+}
+
+func (c *defaultClient) Remount(ctx context.Context, sourcePath, destinationPath string) error {
+	var err error
+	startTS := time.Now()
+	defer func() {
+		c.observeTime(startTS, metrics.OperationWrite)
+		c.incrementOperationCounter(metrics.OperationWrite, err)
+	}()
+
+	return c.client.Sys().RemountWithContext(ctx, sourcePath, destinationPath)
 }
 
 func (c *defaultClient) Write(ctx context.Context, path string, m map[string]any) (*api.Secret, error) {
