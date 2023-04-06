@@ -264,6 +264,15 @@ func main() {
 		setupLog.Error(err, "Unable to create controller", "controller", "VaultMount")
 		os.Exit(1)
 	}
+	if err = (&controllers.VaultPolicyReconciler{
+		Client:        mgr.GetClient(),
+		Scheme:        mgr.GetScheme(),
+		Recorder:      mgr.GetEventRecorderFor("VaultPolicy"),
+		ClientFactory: clientFactory,
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "Unable to create controller", "controller", "VaultPolicy")
+		os.Exit(1)
+	}
 	//+kubebuilder:scaffold:builder
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
